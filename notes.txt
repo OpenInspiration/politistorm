@@ -1,0 +1,6 @@
+# Run Mongo
+$ mongod --config /usr/local/etc/mongod.conf
+
+# These tutorials is good
+http://zellwk.com/blog/crud-express-mongodb/  
+https://github.com/Swiip/hello-twitter/blob/master/hello-twitter-nodejs

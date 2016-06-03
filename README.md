@@ -1,6 +1,4 @@
-# Run Mongo
-$ mongod --config /usr/local/etc/mongod.conf
+Prerequisites
+======
+`.env.json` Rename stub env.json and include your app credentials.
 
-# These tutorials is good
-http://zellwk.com/blog/crud-express-mongodb/
-https://github.com/Swiip/hello-twitter/blob/master/hello-twitter-nodejs
