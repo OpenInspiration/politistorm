@@ -35,31 +35,43 @@ server.on('listening', onListening);
  * Initialize Socketio listener
  */
 
+var clients = new Set();
+
+// Immediately begin stream
+const text = "Trump";
+console.log("open stream on ", text);
+app.get('tweeter').stream("statuses/filter", {
+    // track: text
+    follow: "realdonaldtrump"
+}, function (s) {
+    s.on("data", function (data) {
+        // console.log("received tweet ", data)
+        process.stdout.write(".");
+        for (clientSocket in clients) {
+            clientSocket.emit("tweet", data);
+        }
+    });
+    s.on("error", function (error) {
+        console.log(util.inspect(error));
+    });
+    s.on("end", function () {
+        console.log("****** ERROR: Twitter stream terminated!")
+    });
+});
+
 var io = socketio.listen(server);
 io.sockets.on("connection", function (socket) {
 
-    // Immediately begin stream
-    const text = "Trump";
-    console.log("open stream on ", text);
-    app.get('tweeter').stream("statuses/filter", {
-        track: text
-    }, function (s) {
-        s.on("data", function (data) {
-            // console.log("received tweet ", data)
-            process.stdout.write(".");
-            socket.emit("tweet", data);
-        });
-        s.on("error", function (error) {
-            console.log(util.inspect(error));
-        });
-        s.on("end", function () {
-            console.log("****** ERROR: Twitter stream terminated!")
-        });
-    });
+    clients.add(socket);
+    var socketDisconnectCallback = (function (originalSocket) {
+        // Bind this socket to
+        return function () {
+            clients.remove(originalSocket);
+        }
+    })(socket);
 
-    socket.on("disconnect", function () {
-        console.log("socket closed");
-    });
+    socket.on("disconnect", socketDisconnectCallback);
+
 });
 
 
